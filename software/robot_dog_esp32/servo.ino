@@ -2,6 +2,7 @@ float testAngle = 0;
 float testAngleInc = 0.5;
 bool testAngleWay = true;
 
+
 void initServo()
 {
   Serial.print("Servo ");

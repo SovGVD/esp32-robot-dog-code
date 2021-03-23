@@ -92,3 +92,22 @@ leg legs[LEG_NUM] = {
     {true, 0, 0}
   }
 };
+
+/**
+ * Not all servos are perfect
+ * 
+ * This is for TowerPro MG90D (or maybe I have clone, who knows)
+ */
+servoProfile servoMainProfile = {
+    20,   // minAngle;
+    160,  // maxAngle;
+    780,  // degMin;
+    1000, // deg30;
+    1000, // deg50;
+    1000, // deg70;
+    1500, // deg90;
+    1000, // deg110;
+    1000, // deg130;
+    1000, // deg150;
+    2200  // degMax;
+};
