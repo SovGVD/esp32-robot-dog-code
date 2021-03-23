@@ -34,5 +34,10 @@ void setLegPWM(leg &_leg)
   pwm.setPWM(_leg.hal.pin.gamma,  0,  angleToPulse(limitServoAngle(getHALAngle(_leg.angle.gamma, _leg.hal.mid.gamma, _leg.hal.trim.gamma, _leg.hal.ratio.gamma, _leg.inverse.gamma))));
 }
 
+void runServoCalibrate(leg &_leg)
+{
+  // TODO
+}
+
 
 #endif

@@ -12,12 +12,10 @@ void initServo()
   Serial.println();
 }
 
-void setServoToMiddle(int id)
+void setServoToMiddle()
 {
   for (uint8_t i = 0; i < LEG_NUM; i++) {
-    legs[i].angle.alpha = M_PI_2;
-    legs[i].angle.beta  = M_PI_2;
-    legs[i].angle.gamma = M_PI_2;
+    runServoCalibrate(legs[i]);
   }
 }
 

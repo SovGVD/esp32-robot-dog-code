@@ -31,7 +31,7 @@ leg legs[LEG_NUM] = {
     },
     {   -LEG_POINT_X,  LEG_POINT_Y_F,    -LEG_POINT_Z},
     {LEG_ANGLE_ALPHA, LEG_ANGLE_BETA, LEG_ANGLE_GAMMA},
-    {true, true, false, false, false, true},
+    {true, true, false, false, true, true},
     {true, 0, 0}
   },
   // RIGHT FRONT
@@ -50,7 +50,7 @@ leg legs[LEG_NUM] = {
     },
     {    LEG_POINT_X,  LEG_POINT_Y_F,    -LEG_POINT_Z},
     {LEG_ANGLE_ALPHA, LEG_ANGLE_BETA, LEG_ANGLE_GAMMA},
-    {false, true, false, true, true, false},
+    {false, true, false, true, false, false},
     {true, 0, 0}
   },
   // LEFT HIND
@@ -69,7 +69,7 @@ leg legs[LEG_NUM] = {
     },
     {   -LEG_POINT_X, -LEG_POINT_Y_H,    -LEG_POINT_Z},
     {LEG_ANGLE_ALPHA, LEG_ANGLE_BETA, LEG_ANGLE_GAMMA},
-    {true, true, false, true, false, true},
+    {true, true, false, true, true, true},
     {true, 0, 0}
   },
   // RIGHT HIND
@@ -88,7 +88,7 @@ leg legs[LEG_NUM] = {
     },
     {    LEG_POINT_X, -LEG_POINT_Y_H,    -LEG_POINT_Z},
     {LEG_ANGLE_ALPHA, LEG_ANGLE_BETA, LEG_ANGLE_GAMMA},
-    {false, true, false, false, true, false},
+    {false, true, false, false, false, false},
     {true, 0, 0}
   }
 };
@@ -99,15 +99,15 @@ leg legs[LEG_NUM] = {
  * This is for TowerPro MG90D (or maybe I have clone, who knows)
  */
 servoProfile servoMainProfile = {
-    20,   // minAngle;
-    160,  // maxAngle;
-    780,  // degMin;
-    1000, // deg30;
-    1000, // deg50;
-    1000, // deg70;
-    1500, // deg90;
-    1000, // deg110;
-    1000, // deg130;
-    1000, // deg150;
-    2200  // degMax;
+    20,   // minAngle
+    160,  // maxAngle
+    780,  // degMin
+    890,  // deg30
+    1090, // deg50
+    1300, // deg70
+    1500, // deg90 - middle
+    1700, // deg110
+    1900, // deg130
+    2110, // deg150
+    2200  // degMax
 };

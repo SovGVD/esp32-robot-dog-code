@@ -50,7 +50,7 @@
 #define LEG_TRIM_INC   0.002   // radian
 #define LEG_TRIM_LIMIT  0.24   // See settingsUint8ToDouble()
 
-// Servo config
+// Servo config (set as max as possible for init, but use servoProfile)
 #define SERVO_MIN 600
 #define SERVO_MAX 2400
 #define SERVO_FREQ 330

@@ -157,16 +157,9 @@ double cliSetAngleRHGamma(double deg) { return _cliSetAngle(legs[LEGRH], GAMMA, 
 // Servo calibration
 double cliSetServoCalib(double i) {
   HALEnabled = false;
-  delay(1000);
-  // that it terrible, but we need to wait to make sure HAL disabled
+  delay(1000); // that it terrible, but we need to wait to make sure HAL disabled
 
-  // TODO use setServoToMiddle
-  
-  for (uint8_t i = 0; i < LEG_NUM; i++) {
-    _cliSetAngle(legs[i], ALPHA, 90);
-    _cliSetAngle(legs[i], BETA,  90);
-    _cliSetAngle(legs[i], GAMMA, 90);
-  }
+  setServoToMiddle();
 
   return cliGetHALState(1);
 }

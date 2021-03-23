@@ -15,6 +15,7 @@ void updateHAL() {
 }
 
 void doHAL() {
+  if (!isHALEnabled()) return;
   servoSet();
 }
 
