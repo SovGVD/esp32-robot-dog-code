@@ -61,7 +61,7 @@ var gamepad = {
 		return parseInt(raw*10000)/10000;
     },
 
-    deadband: 0.005,
+    deadband: 0.09,
     updateInterval: null,
 };
 

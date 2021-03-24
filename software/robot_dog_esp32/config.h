@@ -27,10 +27,6 @@
 // Robot config
 #define LEG_NUM 4
 
-// Size of leg parts in mm
-#define LEG_SIZE_L1   0.0
-#define LEG_SIZE_L2  51.9
-#define LEG_SIZE_L3  50.0
 
 // default angles for init state
 #define LEG_ANGLE_ALPHA M_PI_2

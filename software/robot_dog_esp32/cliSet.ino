@@ -163,3 +163,13 @@ double cliSetServoCalib(double i) {
 
   return cliGetHALState(1);
 }
+
+double cliSetServoToInit(double i) {
+  HALEnabled = false;
+  delay(1000); // that it terrible, but we need to wait to make sure HAL disabled
+
+  setServoToInit();
+
+  return cliGetHALState(1);
+  
+}

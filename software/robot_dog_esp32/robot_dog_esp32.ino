@@ -2,7 +2,7 @@
 
 #include "libs/IK/geometry.h"
 #include "libs/IK/leg.h"
-#include "libs/IK/IK.h"
+#include "libs/IK/IK_simple.h"  // TODO this is for small dog only!!!
 #include "libs/planner/planner.h"
 #include "libs/balance/balance.h"
 #include "libs/gait/gait.h"

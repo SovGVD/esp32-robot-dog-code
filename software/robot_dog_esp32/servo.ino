@@ -13,9 +13,23 @@ void initServo()
 }
 
 void setServoToMiddle()
-{
+{ // remove it
   for (uint8_t i = 0; i < LEG_NUM; i++) {
     runServoCalibrate(legs[i]);
+  }
+}
+
+/**
+ * Set servo to init position
+ *  it is 90, 45, 90
+ */
+void setServoToInit()
+{
+  for (uint8_t i = 0; i < LEG_NUM; i++) {
+    legs[i].angle.alpha = M_PI_2;
+    legs[i].angle.beta  = M_PI_4;
+    legs[i].angle.gamma = M_PI_2;
+    setLegPWM(legs[i]);
   }
 }
 

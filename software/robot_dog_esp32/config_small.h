@@ -5,12 +5,17 @@
 // default legs state (TODO measure it!!!)
 #define LEG_BODY_X      39.5
 #define LEG_BODY_Y_F    70.5  // not sure
-#define LEG_BODY_Y_H    95.0
+#define LEG_BODY_Y_H    70.5
 #define LEG_BODY_Z       0.0
-#define LEG_POINT_X     39.5
+#define LEG_POINT_X     55.0
 #define LEG_POINT_Y_F   70.5 // not sure
-#define LEG_POINT_Y_H   95.0
-#define LEG_POINT_Z     75.0
+#define LEG_POINT_Y_H   70.5
+#define LEG_POINT_Z     80.0
+
+// Size of leg parts in mm
+#define LEG_SIZE_L1   0.0
+#define LEG_SIZE_L2  51.9
+#define LEG_SIZE_L3  50.0
 
 point balanceOffset = {0, 0, 0};
 
@@ -24,7 +29,7 @@ leg legs[LEG_NUM] = {
     {LEG_ANGLE_ALPHA_MIN, LEG_ANGLE_BETA_MIN, LEG_ANGLE_GAMMA_MIN},
     {LEG_ANGLE_ALPHA_MAX, LEG_ANGLE_BETA_MAX, LEG_ANGLE_GAMMA_MAX},
     {
-      {M_PI_2, M_PI_4, M_PI_2},  // hardware middle
+      {M_PI_2, M_PI_2, M_PI_2},  // hardware middle
       { 25, 26, 27},             // 3 servo pins
       {  0,  0,  0},             // servo middle trim
       {  2,  1,  1}              // gear ratio, first and last one is 16 groves on servo and 24 groves on leg
@@ -43,7 +48,7 @@ leg legs[LEG_NUM] = {
     {LEG_ANGLE_ALPHA_MIN, LEG_ANGLE_BETA_MIN, LEG_ANGLE_GAMMA_MIN},
     {LEG_ANGLE_ALPHA_MAX, LEG_ANGLE_BETA_MAX, LEG_ANGLE_GAMMA_MAX},
     {
-      {M_PI_2, M_PI_4, M_PI_2},
+      {M_PI_2, M_PI_2, M_PI_2},
       { 16, 18, 17},
       {  0,  0,  0},
       {  2,  1,  1}
@@ -62,7 +67,7 @@ leg legs[LEG_NUM] = {
     {LEG_ANGLE_ALPHA_MIN, LEG_ANGLE_BETA_MIN, LEG_ANGLE_GAMMA_MIN},
     {LEG_ANGLE_ALPHA_MAX, LEG_ANGLE_BETA_MAX, LEG_ANGLE_GAMMA_MAX},
     {
-      {M_PI_2, M_PI_4, M_PI_2},
+      {M_PI_2, M_PI_2, M_PI_2},
       { 13, 12, 14},
       {  0,  0,  0},
       {  2,  1,  1}
@@ -81,7 +86,7 @@ leg legs[LEG_NUM] = {
     {LEG_ANGLE_ALPHA_MIN, LEG_ANGLE_BETA_MIN, LEG_ANGLE_GAMMA_MIN},
     {LEG_ANGLE_ALPHA_MAX, LEG_ANGLE_BETA_MAX, LEG_ANGLE_GAMMA_MAX},
     {
-      {M_PI_2, M_PI_4, M_PI_2},
+      {M_PI_2, M_PI_2, M_PI_2},
       {  4,  2, 15},
       {  0,  0,  0},
       {  2,  1,  1}

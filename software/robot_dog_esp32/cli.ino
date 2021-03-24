@@ -1,5 +1,5 @@
 #define CLI_MENU_COMMANDS_GET 27
-#define CLI_MENU_COMMANDS_SET 27
+#define CLI_MENU_COMMANDS_SET 28
 #define CLI_MENU_COMMANDS_RUN 5
 
 char cliChar;
@@ -66,7 +66,8 @@ const cliCommand cliCommandsSet[CLI_MENU_COMMANDS_SET] = {
   { "RH_angle_alpha",    cliSetAngleRHAlpha   },
   { "RH_angle_beta",     cliSetAngleRHBeta    },
   { "RH_angle_gamma",    cliSetAngleRHGamma   },
-  { "servo_calib",       cliSetServoCalib     }
+  { "servo_calib",       cliSetServoCalib     },
+  { "servo_to_init",     cliSetServoToInit    }
 };
 
 const cliCommand cliCommandsRun[CLI_MENU_COMMANDS_RUN] = {
