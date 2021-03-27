@@ -125,6 +125,7 @@ Stream *cliSerial;
 bool subscriptionEnabled = false;
 bool subscriptionBinary = false;
 
+
 void setup()
 {
   Serial.begin(SERIAL_BAUD);
@@ -155,7 +156,7 @@ void setup()
 */
 void loop()
 {
-  currentTime = millis();
+  currentTime = micros();
   if (currentTime - previousTime >= LOOP_TIME) {
     previousTime = currentTime;
 
@@ -171,7 +172,8 @@ void loop()
 
     FS_WS_count++;
 
-    loopTime = millis() - currentTime;
+    loopTime = micros() - currentTime;
+//    Serial.println(loopTime);
   }
 }
 

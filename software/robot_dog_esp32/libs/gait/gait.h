@@ -19,10 +19,10 @@ typedef struct gaitSequence_t {
 typedef struct gaitConfig_t {
 	const gaitSequence sequence[16];
 	const uint8_t      sequenceLength;
-	const double       loopTime;       // loop time to correclty calculate number of sub moves per gate item, milliseconds
+	const double       loopTime;       // loop time in microseconds to correclty calculate number of sub moves per gate item, milliseconds
 	double             offTheGround;   // in mm
-	double             swingDuration;  // duration of swing in milliseconds (1sec = 1000 millisec, 1sec = 1000000microsec)
-	double             duration;       // duration of gaitSequence item, in milliseconds (1sec = 1000 millisec), should be equal or longer than swingDuration
+	double             swingDuration;  // duration of swing in microseconds (1sec = 1000 millisec, 1sec = 1000000microsec)
+	double             duration;       // duration of gaitSequence item, in microseconds, should be equal or longer than swingDuration
 } gaitConfig;
 
 class gait
