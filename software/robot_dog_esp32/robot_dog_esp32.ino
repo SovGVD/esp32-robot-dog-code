@@ -33,7 +33,7 @@
 #endif
 
 #if PWM_CONTROLLER_TYPE == ESP32PWM
-  #define USE_ESP32_TIMER_NO 3
+  #define USE_ESP32_TIMER_NO 1
   #include "ESP32_ISR_Servo.h"
 #endif
 
@@ -172,7 +172,7 @@ void loop()
 
     FS_WS_count++;
 
-    loopTime = micros() - currentTime;
+//    loopTime = micros() - currentTime;
 //    Serial.println(loopTime);
   }
 }
