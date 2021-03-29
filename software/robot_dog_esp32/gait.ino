@@ -7,24 +7,9 @@ gaitConfig GAIT_CONFIG = {
   2,          // items in sequence
   LOOP_TIME,  // loop time in microseconds to correclty calculate number of sub moves per gate item
   25,         // above the ground on swing, 20mm
-  100000,      // swing duration, microseconds
-  100000       // sequence items duration, microseconds
+  100000,     // swing duration, microseconds
+  200000      // sequence items duration, microseconds
 };
-
-/*
-gaitConfig GAIT_CONFIG = {
-  {
-    {SWING,  STANCE, STANCE, STANCE},
-    {STANCE, STANCE, SWING,  STANCE},
-    {STANCE, SWING,  STANCE, STANCE},
-    {STANCE, STANCE, STANCE, SWING }
-  },
-  4,           // items in sequence
-  LOOP_TIME,   // loop time to correclty calculate number of sub moves per gate item
-  30,          // above the ground on swing, 30mm
-  2000,         // swing duration
-  2000          // sequence items duration
-};*/
 
 gait gaitLegLF(GAIT_CONFIG, legs[LEGLF]);
 gait gaitLegRF(GAIT_CONFIG, legs[LEGRF]);

@@ -3,7 +3,7 @@
  */
 
 //Main loop
-#define LOOP_TIME 2500   // microseconds (10^-6 seconds)
+#define LOOP_TIME 4000   // microseconds (10^-6 seconds)
 
 //Fail safe
 #define FS_WS_THR 400  // cycles, 1 second = FS_WS_THR*LOOP_TIME, e.g. 1 000 * 1 000 = 1 000 000 = 1 second
