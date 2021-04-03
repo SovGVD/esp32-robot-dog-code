@@ -1,5 +1,5 @@
 {
-  "name": "esp8266-milight-hub-web",
+  "name": "RobotDogWebUI",
   "version": "1.0.0",
   "description": "",
   "main": "gulpfile.js",
@@ -8,7 +8,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "del": "^2.2.1",
     "gulp": "^3.9.1",
