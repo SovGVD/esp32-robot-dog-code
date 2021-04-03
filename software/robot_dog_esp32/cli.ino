@@ -1,4 +1,4 @@
-#define CLI_MENU_COMMANDS_GET 29
+#define CLI_MENU_COMMANDS_GET 30
 #define CLI_MENU_COMMANDS_SET 28
 #define CLI_MENU_COMMANDS_RUN 5
 
@@ -38,7 +38,8 @@ const cliCommand cliCommandsGet[CLI_MENU_COMMANDS_GET] = {
   { "RH_angle_gamma",    cliGetAngleRHGamma   },
   { "angles",            cliGetAngles         },
   { "power",             cliGetPower          },
-  { "imu",               cliGetIMU            }
+  { "imu",               cliGetIMU            },
+  { "debug",             cliGetDebug          }
 };
 
 const cliCommand cliCommandsSet[CLI_MENU_COMMANDS_SET] = {
@@ -74,9 +75,9 @@ const cliCommand cliCommandsSet[CLI_MENU_COMMANDS_SET] = {
 
 const cliCommand cliCommandsRun[CLI_MENU_COMMANDS_RUN] = {
   { "help",         cliRunHelp        },
-  { "I2Cscan",      runI2CScan        },
-  { "calibrateIMU", calibrateIMU      },
-  { "WiFiinfo",     WiFiInfo          },
+  { "i2cscan",      runI2CScan        },
+  { "calibrateimu", calibrateIMU      },
+  { "wifiinfo",     WiFiInfo          },
   { "sbscr",        subscriptionState }
 };
 

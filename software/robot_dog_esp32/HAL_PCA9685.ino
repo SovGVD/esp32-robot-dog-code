@@ -1,6 +1,7 @@
 #if PWM_CONTROLLER_TYPE == PCA9685
 
 void initServoHAL() {
+  pwm = Adafruit_PWMServoDriver();
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);  // The int.osc. is closer to 27MHz
   pwm.setPWMFreq(SERVO_FREQ);  // This is the maximum PWM frequency of servo

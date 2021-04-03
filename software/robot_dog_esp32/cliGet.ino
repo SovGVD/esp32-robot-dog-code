@@ -107,9 +107,9 @@ double cliGetAngles(double id)
 
 double cliGetPower(double id)
 {
-  cliSerial->print(getPowerSensorVoltage());
+  cliSerial->print(getPowerSensorVoltage(), 6);
   cliSerial->println(" V");
-  cliSerial->print(getPowerSensorCurrent());
+  cliSerial->print(getPowerSensorCurrent(), 6);
   cliSerial->println(" A");
 
   cliHideReturn = true;
@@ -119,12 +119,35 @@ double cliGetPower(double id)
 double cliGetIMU(double id)
 {
   cliSerial->print("Pitch: ");
-  cliSerial->println(IMU_DATA[PITCH]);
+  cliSerial->println(IMU_DATA[PITCH], 6);
   cliSerial->print("Roll: ");
-  cliSerial->println(IMU_DATA[ROLL]);
+  cliSerial->println(IMU_DATA[ROLL], 6);
   cliSerial->print("Yaw: ");
-  cliSerial->println(IMU_DATA[YAW]);
+  cliSerial->println(IMU_DATA[YAW], 6);
 
   cliHideReturn = true;
   return 0.0;
+}
+
+double cliGetDebug(double id)
+{
+
+  switch((int)id) {
+    case 1:
+      cliSerial->print("Main loop: ");
+      cliSerial->println(loopTime);
+
+      cliSerial->print("Service fast loop: ");
+      cliSerial->println(serviceFastLoopTime);
+
+      cliSerial->print("Service loop: ");
+      cliSerial->println(serviceLoopTime);
+
+      break;
+    default:
+      cliSerial->println("Unknown debug ID");
+  }
+  cliHideReturn = true;
+  return 0.0;
+
 }

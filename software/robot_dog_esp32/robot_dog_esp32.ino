@@ -44,12 +44,12 @@
 
   #if POWER_SENSOR == INA219
     #include <INA219_WE.h>
-    INA219_WE ina219 = INA219_WE();
+    INA219_WE ina219;
   #endif
 #endif
 
 float IMU_DATA[3] = {0, 0, 0};
-MPU9250_WE IMU = MPU9250_WE(0x68);
+MPU9250_WE IMU;
 
 // run commands on diferent cores (FAST for main, SLOW for services)
 bool runCommandFASTCore = false;
@@ -62,7 +62,7 @@ double cliFunctionSLOWVar = 0.0;
 TaskHandle_t ServicesTask;
 
 #if PWM_CONTROLLER_TYPE == PCA9685
-  Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+  Adafruit_PWMServoDriver pwm;
 #endif
 
 unsigned long currentTime;
@@ -70,8 +70,12 @@ unsigned long previousTime;
 unsigned long loopTime;
 
 unsigned long serviceCurrentTime;
+
 unsigned long servicePreviousTime;
 unsigned long serviceLoopTime;
+
+unsigned long serviceFastPreviousTime;
+unsigned long serviceFastLoopTime;
 
 bool HALEnabled = true;
 
@@ -145,32 +149,31 @@ bool subscriptionBinary = false;
 void setup()
 {
   Serial.begin(SERIAL_BAUD);
-  Wire.begin();
-  Wire.setClock(400000);
-
-  delay(500);
+  delay(100);
 
   initSettings();
   delay(100);
-  initIMU();
-  delay(100);
+  
   initHAL();
   delay(100);
+  
   initGait();
   delay(100);
+  
   initWiFi();
   delay(100);
+  
   initWebServer();
   delay(100);
   
   xTaskCreatePinnedToCore(
     servicesLoop,   /* Task function. */
     "Services",     /* name of task. */
-    100000,       /* Stack size of task */
-    NULL,        /* parameter of the task */
-    1,           /* priority of the task */
-    &ServicesTask,      /* Task handle to keep track of created task */
-    0);          /* pin task to core 0 */
+    100000,         /* Stack size of task */
+    NULL,           /* parameter of the task */
+    1,              /* priority of the task */
+    &ServicesTask,  /* Task handle to keep track of created task */
+    0);             /* pin task to core 0 */
 }
 
 /**
@@ -184,20 +187,20 @@ void loop()
     previousTime = currentTime;
 
     updateFailsafe();
-    updateIMU();
-    updatePower();
     updateGait();
     updateHAL();
     doHAL();
 
     updateWiFi();
-    runFASTCommand();
     
 
     FS_WS_count++;
 
-//    loopTime = micros() - currentTime;
-//    Serial.println(loopTime);
+    loopTime = micros() - currentTime;
+    if (loopTime > LOOP_TIME) {
+      Serial.print("WARNING! Increase LOOP_TIME: ");
+      Serial.println(loopTime);
+    }
   }
 }
 
@@ -209,6 +212,14 @@ void servicesSetup() {
   cliSerial = &Serial;
   initCLI();
   initSubscription();
+  Wire.begin();
+  Wire.setClock(400000);
+  delay(100);
+
+  initIMU();
+  delay(100);
+  initPowerSensor();
+  delay(100);
 }
 
 void servicesLoop(void * pvParameters) {
@@ -216,15 +227,38 @@ void servicesLoop(void * pvParameters) {
 
   for (;;) {
     serviceCurrentTime = micros();
+
+    if (serviceCurrentTime - serviceFastPreviousTime >= SERVICE_FAST_LOOP_TIME) {
+      serviceFastPreviousTime = serviceCurrentTime;
+
+      updateIMU();
+      
+      runFASTCommand();
+      doFASTSubscription();
+
+      serviceFastLoopTime = micros() - serviceCurrentTime;
+      if (serviceFastLoopTime > LOOP_TIME) {
+        Serial.print("WARNING! Increase SERVICE_FAST_LOOP_TIME: ");
+        Serial.println(serviceFastLoopTime);
+      }      
+    }
+
     if (serviceCurrentTime - servicePreviousTime >= SERVICE_LOOP_TIME) {
       servicePreviousTime = serviceCurrentTime;
 
+      updatePower();
       runSLOWCommand();
       updateCLI();
-      doFASTSubscription();
       doSLOWSubscription();
-      vTaskDelay(1);  // https://github.com/espressif/arduino-esp32/issues/595
+
+      serviceLoopTime = micros() - serviceCurrentTime;  // this loop + service fast loop
+      if (serviceLoopTime > LOOP_TIME) {
+        Serial.print("WARNING! Increase SERVICE_LOOP_TIME: ");
+        Serial.println(serviceLoopTime);
+      }
+
     }
+    vTaskDelay(1);  // https://github.com/espressif/arduino-esp32/issues/595
   }
 }
 
@@ -248,5 +282,6 @@ void runSLOWCommand()
    TODO
     - calculate center of mass and use it for balance
     - make the queue of tasks by core, e.g. not just   cliFunctionFAST = runI2CScanFAST; but array/list with commands
+    - i2c pwm broken, i2c in service loop
 
 */

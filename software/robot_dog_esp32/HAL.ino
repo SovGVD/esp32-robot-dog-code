@@ -3,7 +3,6 @@ void initHAL()
   Serial.print("HAL ");
   initServo();
   initLegs();
-  initPowerSensor();
   Serial.println();
 }
 

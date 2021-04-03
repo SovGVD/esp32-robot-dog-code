@@ -7,6 +7,8 @@ void initIMU()
 
 void setupIMU()
 {
+  IMU = MPU9250_WE(IMU_ADDRESS);
+  
   if(!IMU.init()){
     Serial.println("IMU does not respond");
   }
