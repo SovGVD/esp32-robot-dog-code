@@ -109,9 +109,8 @@ double cliGetPower(double id)
 {
   cliSerial->print(getPowerSensorVoltage());
   cliSerial->println(" V");
-  // TODO find why it is throwing error (div by zero or something else)
   cliSerial->print(getPowerSensorCurrent());
-  cliSerial->println(" mA");
+  cliSerial->println(" A");
 
   cliHideReturn = true;
   return 0.0;

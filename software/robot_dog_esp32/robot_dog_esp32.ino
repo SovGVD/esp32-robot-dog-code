@@ -39,6 +39,9 @@
 #endif
 
 #ifdef POWER_SENSOR
+  float voltage_V = 0.0;
+  float current_A = 0.0;
+
   #if POWER_SENSOR == INA219
     #include <INA219_WE.h>
     INA219_WE ina219 = INA219_WE();
@@ -182,6 +185,7 @@ void loop()
 
     updateFailsafe();
     updateIMU();
+    updatePower();
     updateGait();
     updateHAL();
     doHAL();
