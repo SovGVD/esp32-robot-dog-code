@@ -29,11 +29,6 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
     clientOnline = true;
   } else if (clientOnline && type == WS_EVT_DATA) {
     FS_WS_count = 0;  // zero FS counter
-      //for(int i=0; i < len; i++) {
-      //  Serial.print(data[i]);
-      //  Serial.print("|");
-      //}
-      //Serial.println();
     if (data[0] == 77) {  // M
       pMove(data);
     }

@@ -14,7 +14,7 @@ const favicon = require('gulp-base64-favicon');
 const dataFolder = '../robot_dog_esp32/web/';
 
 gulp.task('clean', function() {
-    del([ dataFolder + '*']);
+    del([ dataFolder + '*'], { force: true });
     return true;
 });
 
