@@ -1,4 +1,4 @@
-#define CLI_MENU_COMMANDS_GET 27
+#define CLI_MENU_COMMANDS_GET 29
 #define CLI_MENU_COMMANDS_SET 28
 #define CLI_MENU_COMMANDS_RUN 5
 
@@ -36,7 +36,9 @@ const cliCommand cliCommandsGet[CLI_MENU_COMMANDS_GET] = {
   { "RH_angle_alpha",    cliGetAngleRHAlpha   },
   { "RH_angle_beta",     cliGetAngleRHBeta    },
   { "RH_angle_gamma",    cliGetAngleRHGamma   },
-  { "angles",            cliGetAngles         }
+  { "angles",            cliGetAngles         },
+  { "power",             cliGetPower          },
+  { "imu",               cliGetIMU            }
 };
 
 const cliCommand cliCommandsSet[CLI_MENU_COMMANDS_SET] = {

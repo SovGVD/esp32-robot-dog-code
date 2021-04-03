@@ -33,7 +33,7 @@ class planner
 		point      _predictedLegLHfoot;
 		point      _predictedLegRHfoot;
 		double     moveInc = 50;
-		double     rotateInc = 0.4;
+		double     rotateInc = 0.2;
 };
 
 #endif

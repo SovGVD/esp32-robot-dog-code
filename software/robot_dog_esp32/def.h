@@ -9,6 +9,14 @@
 #define MPU9650  101
 #define SD1306   102
 #define ESP32PWM 103
+#define INA219   104
+
+/**
+ * Axis
+ */
+#define ROLL  0
+#define PITCH 1
+#define YAW   2
 
 #define SOFTWARE_CORE_VERSION 1
 

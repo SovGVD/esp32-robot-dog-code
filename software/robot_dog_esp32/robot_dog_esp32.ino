@@ -18,6 +18,7 @@
 #include "cli.h"
 #include "subscription.h"
 
+#include <MPU9250_WE.h>
 #include <Wire.h>
 
 #include "libs/IK/IK.cpp"
@@ -33,11 +34,19 @@
 #endif
 
 #if PWM_CONTROLLER_TYPE == ESP32PWM
-  #define USE_ESP32_TIMER_NO 1
+  #define USE_ESP32_TIMER_NO 3
   #include "ESP32_ISR_Servo.h"
 #endif
 
-#include "libs/MPU9250/MPU9250.h"
+#ifdef POWER_SENSOR
+  #if POWER_SENSOR == INA219
+    #include <INA219_WE.h>
+    INA219_WE ina219 = INA219_WE();
+  #endif
+#endif
+
+float IMU_DATA[3] = {0, 0, 0};
+MPU9250_WE IMU = MPU9250_WE(0x68);
 
 // run commands on diferent cores (FAST for main, SLOW for services)
 bool runCommandFASTCore = false;
@@ -56,6 +65,10 @@ TaskHandle_t ServicesTask;
 unsigned long currentTime;
 unsigned long previousTime;
 unsigned long loopTime;
+
+unsigned long serviceCurrentTime;
+unsigned long servicePreviousTime;
+unsigned long serviceLoopTime;
 
 bool HALEnabled = true;
 
@@ -130,20 +143,27 @@ void setup()
 {
   Serial.begin(SERIAL_BAUD);
   Wire.begin();
+  Wire.setClock(400000);
 
   delay(500);
 
   initSettings();
+  delay(100);
   initIMU();
+  delay(100);
   initHAL();
+  delay(100);
   initGait();
+  delay(100);
   initWiFi();
+  delay(100);
   initWebServer();
+  delay(100);
   
   xTaskCreatePinnedToCore(
     servicesLoop,   /* Task function. */
     "Services",     /* name of task. */
-    10000,       /* Stack size of task */
+    100000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &ServicesTask,      /* Task handle to keep track of created task */
@@ -191,11 +211,16 @@ void servicesLoop(void * pvParameters) {
   servicesSetup();
 
   for (;;) {
-    runSLOWCommand();
-    updateCLI();
-    doFASTSubscription();
-    doSLOWSubscription();
-    delay(100); // TODO use timer to implement do-FAST/SLOW-Subscription
+    serviceCurrentTime = micros();
+    if (serviceCurrentTime - servicePreviousTime >= SERVICE_LOOP_TIME) {
+      servicePreviousTime = serviceCurrentTime;
+
+      runSLOWCommand();
+      updateCLI();
+      doFASTSubscription();
+      doSLOWSubscription();
+      vTaskDelay(1);  // https://github.com/espressif/arduino-esp32/issues/595
+    }
   }
 }
 

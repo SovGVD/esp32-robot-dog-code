@@ -1,16 +1,19 @@
-MPU9250 mpu;
-
-#define ROLL  0
-#define PITCH 1
-#define YAW   2
-
-float IMU_DATA[3] = {0, 0, 0};
-
 void initIMU()
 {
   Serial.print("IMU ");
-  mpu.setup();
+  setupIMU();
   Serial.println();
+}
+
+void setupIMU()
+{
+  if(!IMU.init()){
+    Serial.println("IMU does not respond");
+  }
+
+  IMU.setAccRange(MPU9250_ACC_RANGE_2G);
+  IMU.enableAccDLPF(true);
+  IMU.setAccDLPF(MPU9250_DLPF_6);
 }
 
 double calibrateIMU(double id)
@@ -18,7 +21,7 @@ double calibrateIMU(double id)
   Serial.println("Calibrating ACC and GYRO in 5 seconds. Put device on flat leveled surface.");
   delay(5000);
   Serial.print("Calibration...");
-  mpu.calibrateAccelGyro();
+  IMU.autoOffsets();
   Serial.println("Done.");
 
   return 1;
@@ -26,24 +29,11 @@ double calibrateIMU(double id)
 
 void updateIMU()
 {
-  mpu.update();
+  xyzFloat angle = IMU.getAngles();
 
-  IMU_DATA[ROLL]  = mpu.getRoll();
-  IMU_DATA[PITCH] = mpu.getPitch();
-  IMU_DATA[YAW]   = mpu.getYaw();
+  // TODO not sure about correct mapping!!!
+  IMU_DATA[ROLL]  = angle.x;
+  IMU_DATA[PITCH] = angle.y;
+  IMU_DATA[YAW]   = angle.z;
   
-}
-
-void displayIMU(int id)
-{
-//  display.print("Roll  |X| ");
-//  display.println(IMU_DATA[ROLL], DISPLAY_DIGITS);
-//  display.print("Pitch |Y| ");
-//  display.println(IMU_DATA[PITCH], DISPLAY_DIGITS);
-//  display.print("Yaw   |Z| ");
-//  display.println(IMU_DATA[YAW], DISPLAY_DIGITS);
-//  display.println("   X ^        +---+");
-//  display.println("     |        |IMU|");
-//  display.println(" Y <-Z        0---+");
-
 }

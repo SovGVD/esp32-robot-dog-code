@@ -100,6 +100,32 @@ double cliGetAngles(double id)
    cliSerial->println("RH");
    _cliGetAngles(legs[LEGRH]);
 
+   cliHideReturn = true;
    return 0.0;
 
+}
+
+double cliGetPower(double id)
+{
+  cliSerial->print(getPowerSensorVoltage());
+  cliSerial->println(" V");
+  // TODO find why it is throwing error (div by zero or something else)
+  cliSerial->print(getPowerSensorCurrent());
+  cliSerial->println(" mA");
+
+  cliHideReturn = true;
+  return 0.0;
+}
+
+double cliGetIMU(double id)
+{
+  cliSerial->print("Pitch: ");
+  cliSerial->println(IMU_DATA[PITCH]);
+  cliSerial->print("Roll: ");
+  cliSerial->println(IMU_DATA[ROLL]);
+  cliSerial->print("Yaw: ");
+  cliSerial->println(IMU_DATA[YAW]);
+
+  cliHideReturn = true;
+  return 0.0;
 }
