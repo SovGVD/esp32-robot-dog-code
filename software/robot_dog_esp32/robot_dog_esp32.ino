@@ -18,9 +18,10 @@
 #include "cli.h"
 #include "subscription.h"
 
+#include <MPU9250_WE.h>
 #include <Wire.h>
 
-#include "libs/IK/IK.cpp"
+#include "libs/IK/IK_simple.cpp"  // TODO this is for small dog only!!!
 #include "libs/planner/planner.cpp"
 #include "libs/balance/balance.cpp"
 #include "libs/gait/gait.cpp"
@@ -33,11 +34,22 @@
 #endif
 
 #if PWM_CONTROLLER_TYPE == ESP32PWM
-  #define USE_ESP32_TIMER_NO 1
+  #define USE_ESP32_TIMER_NO 3
   #include "ESP32_ISR_Servo.h"
 #endif
 
-#include "libs/MPU9250/MPU9250.h"
+#ifdef POWER_SENSOR
+  float voltage_V = 0.0;
+  float current_A = 0.0;
+
+  #if POWER_SENSOR == INA219
+    #include <INA219_WE.h>
+    INA219_WE ina219;
+  #endif
+#endif
+
+float IMU_DATA[3] = {0, 0, 0};
+MPU9250_WE IMU;
 
 // run commands on diferent cores (FAST for main, SLOW for services)
 bool runCommandFASTCore = false;
@@ -50,12 +62,20 @@ double cliFunctionSLOWVar = 0.0;
 TaskHandle_t ServicesTask;
 
 #if PWM_CONTROLLER_TYPE == PCA9685
-  Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+  Adafruit_PWMServoDriver pwm;
 #endif
 
 unsigned long currentTime;
 unsigned long previousTime;
 unsigned long loopTime;
+
+unsigned long serviceCurrentTime;
+
+unsigned long servicePreviousTime;
+unsigned long serviceLoopTime;
+
+unsigned long serviceFastPreviousTime;
+unsigned long serviceFastLoopTime;
 
 bool HALEnabled = true;
 
@@ -129,25 +149,31 @@ bool subscriptionBinary = false;
 void setup()
 {
   Serial.begin(SERIAL_BAUD);
-  Wire.begin();
-
-  delay(500);
+  delay(100);
 
   initSettings();
-  initIMU();
+  delay(100);
+  
   initHAL();
+  delay(100);
+  
   initGait();
+  delay(100);
+  
   initWiFi();
+  delay(100);
+  
   initWebServer();
+  delay(100);
   
   xTaskCreatePinnedToCore(
     servicesLoop,   /* Task function. */
     "Services",     /* name of task. */
-    10000,       /* Stack size of task */
-    NULL,        /* parameter of the task */
-    1,           /* priority of the task */
-    &ServicesTask,      /* Task handle to keep track of created task */
-    0);          /* pin task to core 0 */
+    100000,         /* Stack size of task */
+    NULL,           /* parameter of the task */
+    1,              /* priority of the task */
+    &ServicesTask,  /* Task handle to keep track of created task */
+    0);             /* pin task to core 0 */
 }
 
 /**
@@ -161,19 +187,20 @@ void loop()
     previousTime = currentTime;
 
     updateFailsafe();
-    updateIMU();
     updateGait();
     updateHAL();
     doHAL();
 
     updateWiFi();
-    runFASTCommand();
     
 
     FS_WS_count++;
 
-//    loopTime = micros() - currentTime;
-//    Serial.println(loopTime);
+    loopTime = micros() - currentTime;
+    if (loopTime > LOOP_TIME) {
+      Serial.print("WARNING! Increase LOOP_TIME: ");
+      Serial.println(loopTime);
+    }
   }
 }
 
@@ -185,17 +212,53 @@ void servicesSetup() {
   cliSerial = &Serial;
   initCLI();
   initSubscription();
+  Wire.begin();
+  Wire.setClock(400000);
+  delay(100);
+
+  initIMU();
+  delay(100);
+  initPowerSensor();
+  delay(100);
 }
 
 void servicesLoop(void * pvParameters) {
   servicesSetup();
 
   for (;;) {
-    runSLOWCommand();
-    updateCLI();
-    doFASTSubscription();
-    doSLOWSubscription();
-    delay(100); // TODO use timer to implement do-FAST/SLOW-Subscription
+    serviceCurrentTime = micros();
+
+    if (serviceCurrentTime - serviceFastPreviousTime >= SERVICE_FAST_LOOP_TIME) {
+      serviceFastPreviousTime = serviceCurrentTime;
+
+      updateIMU();
+      
+      runFASTCommand();
+      doFASTSubscription();
+
+      serviceFastLoopTime = micros() - serviceCurrentTime;
+      if (serviceFastLoopTime > LOOP_TIME) {
+        Serial.print("WARNING! Increase SERVICE_FAST_LOOP_TIME: ");
+        Serial.println(serviceFastLoopTime);
+      }      
+    }
+
+    if (serviceCurrentTime - servicePreviousTime >= SERVICE_LOOP_TIME) {
+      servicePreviousTime = serviceCurrentTime;
+
+      updatePower();
+      runSLOWCommand();
+      updateCLI();
+      doSLOWSubscription();
+
+      serviceLoopTime = micros() - serviceCurrentTime;  // this loop + service fast loop
+      if (serviceLoopTime > LOOP_TIME) {
+        Serial.print("WARNING! Increase SERVICE_LOOP_TIME: ");
+        Serial.println(serviceLoopTime);
+      }
+
+    }
+    vTaskDelay(1);  // https://github.com/espressif/arduino-esp32/issues/595
   }
 }
 
@@ -219,5 +282,6 @@ void runSLOWCommand()
    TODO
     - calculate center of mass and use it for balance
     - make the queue of tasks by core, e.g. not just   cliFunctionFAST = runI2CScanFAST; but array/list with commands
+    - i2c pwm broken, i2c in service loop
 
 */

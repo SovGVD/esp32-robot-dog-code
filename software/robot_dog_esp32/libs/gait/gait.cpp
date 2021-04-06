@@ -19,8 +19,7 @@ double gait::next() {
 		ticksToStop--;
 		progress = 1 - (float)ticksToStop/(float)ticksMax;
 		
-		//_transition.swing(progress);
-		_leg->foot = _transition.swing(progress);
+		_leg->foot = _transition.swing(progress).position;
 		_leg->sensor.onGround = false;
 	} else {
 		progress = 0;
@@ -36,12 +35,11 @@ void gait::start(point from, point to) {
 	ticksMax    = ticksToStop;
 	
 	tParams = {
-		from,
-		to,
+		{from, {0,0,0}},
+		{to, {0,0,0}},
 		_config->offTheGround
 	};
-	// TODO add something to compare point
-	// TODO YAW did not work properly with that
+	// TODO add something to compare `point`
 	if (from.x == to.x && from.y == to.y && from.z == to.z) {
 		// don't move if from and to equal
 		ticksToStop = 0;

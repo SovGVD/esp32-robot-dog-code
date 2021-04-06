@@ -27,63 +27,43 @@ iksolver IK::solve()
 	legangle angle;
 	iksolver s;
 
+	// normalize by body rotation
+	// We need it to make IK simple ignoring body transitions, and at the same time still have absolute positions for each robot points
+	double tmpSin = sin(_body->orientation.yaw * -1);
+	double tmpCos = cos(_body->orientation.yaw * -1);
+
+	point legFoot = {
+			(_leg->foot.x - _body->position.x) * tmpCos - (_leg->foot.y - _body->position.y) * tmpSin,
+			(_leg->foot.x - _body->position.x) * tmpSin + (_leg->foot.y - _body->position.y) * tmpCos,
+			_leg->foot.z
+		};
+
+	point legBody = {
+			(_leg->body.x - _body->position.x) * tmpCos - (_leg->body.y - _body->position.y) * tmpSin,
+			(_leg->body.x - _body->position.x) * tmpSin + (_leg->body.y - _body->position.y) * tmpCos,
+			_leg->body.z
+		};
+
+
 	// TODO: what can I do with limits?
-	double lx = _leg->foot.x - (_leg->body.x + _body->position.x + bodyBalance.x); if (_leg->inverse.x) { lx = -lx; };
-	double ly = _leg->foot.y - (_leg->body.y + _body->position.y + bodyBalance.y); if (_leg->inverse.y) { ly = -ly; };
-	double lz = _leg->foot.z - (_leg->body.z + _body->position.z + bodyBalance.z); if (_leg->inverse.z) { lz = -lz; };
-	
-	#ifdef DEBUG_HAL_LEG
-		Serial.print("LEG BODY: ");
-		Serial.print(_leg->body.x, 10);
-		Serial.print(" ");
-		Serial.print(_leg->body.y, 10);
-		Serial.print(" ");
-		Serial.println(_leg->body.z, 10);
-		
-		Serial.print("BODY POSITION: ");
-		Serial.print(_body->position.x, 10);
-		Serial.print(" ");
-		Serial.print(_body->position.y, 10);
-		Serial.print(" ");
-		Serial.println(_body->position.z, 10);
-
-		Serial.print("BODY BALANCE: ");
-		Serial.print(_body->bodyBalance.x, 10);
-		Serial.print(" ");
-		Serial.print(_body->bodyBalance.y, 10);
-		Serial.print(" ");
-		Serial.println(_body->bodyBalance.z, 10);
-		
-		Serial.print("LEG FOOT: ");
-		Serial.print(_leg->foot.x, 10);
-		Serial.print(" ");
-		Serial.print(_leg->foot.y, 10);
-		Serial.print(" ");
-		Serial.println(_leg->foot.z, 10);
-		
-		Serial.print("L: ");
-		Serial.print(lx, 10);
-		Serial.print(" ");
-		Serial.print(ly, 10);
-		Serial.print(" ");
-		Serial.println(lz, 10);
-	#endif
+	double lx = legFoot.x - legBody.x; if (_leg->inverse.x) { lx = -lx; };
+	double ly = legFoot.y - legBody.y; if (_leg->inverse.y) { ly = -ly; };
+	double lz = legFoot.z - legBody.z; if (_leg->inverse.z) { lz = -lz; };
 
 
-	double a = lx*lx + lz*lz;                       // square of hypotenuse (points between leg.body and leg.foot in XZ-plane)
+	double a = sq(lx) + sq(lz);        // square of hypotenuse (points between leg.body and leg.foot in XZ-plane)
 	double sqrta = sqrt(a);
-	double b = ly*ly + lz*lz;                       // square of hypotenuse (points between leg.body and leg.foot in YZ-plane)
-	double sqrtb = sqrt(b);                       // square of hypotenuse (points between leg.body and leg.foot in YZ-plane)
-	double sqrta = sqrt(a);
-	double l2p2 = _leg->size.l2*_leg->size.l2;      // square of l2		TODO this is const actually
-	double l3p2 = _leg->size.l3*_leg->size.l3;      // square of l3		TODO this is const actually
+	double b = sq(ly) + sq(lz);        // square of hypotenuse (points between leg.body and leg.foot in YZ-plane)
+	double sqrtb = sqrt(b);            // square of hypotenuse (points between leg.body and leg.foot in YZ-plane)
+	double l2p2 = sq(_leg->size.l2);   // square of l2		TODO this is const actually
+	double l3p2 = sq(_leg->size.l3);   // square of l3		TODO this is const actually
 
 
-	angle.alpha = M_PI + ikAsin(lx/sqrta);
+	angle.alpha = M_PI_2 - ikAsin(lx/sqrta);
 
-	angle.beta  = M_PI_2 - ikAcos( (a+l2p2-l3p2) / (2 * sqrtb * _leg->size.l2));
+	angle.beta  = M_PI_2 - ikAsin(ly/sqrtb) - ikAcos( (b+l2p2-l3p2) / (2 * sqrtb * _leg->size.l2));
 
-	angle.gamma = ikAcos((l2p2 + l3p2 - sqrtb) / (2 * _leg->size.l2 * _leg->size.l3));
+	angle.gamma = ikAcos((l2p2 + l3p2 - b) / (2 * _leg->size.l2 * _leg->size.l3));
 
 	s.isSolved = true;	// TODO
 	s.angle = angle;

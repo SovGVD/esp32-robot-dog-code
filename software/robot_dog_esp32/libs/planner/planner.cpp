@@ -39,7 +39,7 @@ void planner::predictPosition(uint8_t steps = 1)
 	// This is terible (code)
 	// Im trying to get new position of legs based on rotation of default position for XY-plane
 	// this is OK for first time, but terrible for anything else
-	
+
 	_predictedLegLFfoot.x = _predictedBody.position.x + _legLF->defaultFoot.x * tmpCos - _legLF->defaultFoot.y * tmpSin;
 	_predictedLegLFfoot.y = _predictedBody.position.y + _legLF->defaultFoot.x * tmpSin + _legLF->defaultFoot.y * tmpCos;
 	_predictedLegLFfoot.z = _legLF->defaultFoot.z;
@@ -55,7 +55,6 @@ void planner::predictPosition(uint8_t steps = 1)
 	_predictedLegRHfoot.x = _predictedBody.position.x + _legRH->defaultFoot.x * tmpCos - _legRH->defaultFoot.y * tmpSin;
 	_predictedLegRHfoot.y = _predictedBody.position.y + _legRH->defaultFoot.x * tmpSin + _legRH->defaultFoot.y * tmpCos;
 	_predictedLegRHfoot.z = _legRH->defaultFoot.z;
-
 }
 
 figure planner::getBodyPosition()

@@ -2,8 +2,10 @@
  * Configuration file
  */
 
-//Main loop
-#define LOOP_TIME 4000   // microseconds (10^-6 seconds)
+//Cores loop time
+#define LOOP_TIME 3000   // microseconds (10^-6 seconds)
+#define SERVICE_LOOP_TIME 100000
+#define SERVICE_FAST_LOOP_TIME 4000
 
 //Fail safe
 #define FS_WS_THR 400  // cycles, 1 second = FS_WS_THR*LOOP_TIME, e.g. 1 000 * 1 000 = 1 000 000 = 1 second
@@ -24,6 +26,7 @@
 #define IMU_ADDRESS            0x68
 #define IMU_TYPE               MPU9250
 
+#define POWER_SENSOR           INA219
 
 // default angles for init state
 #define LEG_ANGLE_ALPHA M_PI_2

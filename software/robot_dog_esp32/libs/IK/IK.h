@@ -68,7 +68,7 @@ class IK
 		double ikAtan2(double x, double y);
 		double ikAcos(double angleRad);
 		double ikAsin(double angleRad);
-		point bodyBalance = {0, 40, 0};	// TODO this is just for tests
+		point bodyBalance = {0, 0, 0};	// TODO this is just for tests
 };
 
 #endif

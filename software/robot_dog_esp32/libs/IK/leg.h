@@ -68,12 +68,13 @@ typedef struct {
 // Leg structure
 typedef struct {
 	const legid     id;
-	const point     body;
+	const point     defaultBody;
 	const point     defaultFoot;
 	const legsize   size;
 	const legangle  min;	// setup limits of angles
 	const legangle  max;	// setup limits of angles
 	leghal          hal;
+	point           body;
 	point           foot;
 	legangle        angle;
 	leginverse      inverse;
