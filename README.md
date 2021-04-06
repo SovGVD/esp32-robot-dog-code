@@ -10,9 +10,6 @@
 - Arduino IDE compatible
 
 ## TODO
-- [ ] something wrong with YAWm it just can't rotate, some comments in the code
-- [ ] mobile friendly UI
-- [ ] something wrong with gait planner timings, maybe something wrong with math or LOOP_TIME is not correct
 - [ ] use power sensor and IMU
 
 ## How to
