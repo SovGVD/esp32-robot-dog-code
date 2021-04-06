@@ -144,10 +144,50 @@ double cliGetDebug(double id)
       cliSerial->println(serviceLoopTime);
 
       break;
+
+    case 2:
+      cliSerial->print("Body   ");
+      cliPrintPoint(body.position, 3);
+      cliPrintAngle(body.orientation, 4);
+      cliSerial->println();
+
+      for (int i = 0; i < LEG_NUM; i++) {
+        cliSerial->print("Leg ");
+        cliSerial->print(i);
+        cliSerial->print("  ");
+
+        cliPrintPoint(legs[i].foot, 2);
+        cliSerial->println();
+      }
+      break;
+
     default:
       cliSerial->println("Unknown debug ID");
   }
+
   cliHideReturn = true;
   return 0.0;
+}
 
+
+void cliPrintPoint(point p, int n)
+{
+  cliSerial->print("{");
+  cliSerial->print(p.x, n);
+  cliSerial->print(", ");
+  cliSerial->print(p.y, n);
+  cliSerial->print(", ");
+  cliSerial->print(p.z, n);
+  cliSerial->print("} ");
+}
+
+void cliPrintAngle(angle p, int n)
+{
+  cliSerial->print("{");
+  cliSerial->print(degToRad(p.pitch), n);
+  cliSerial->print(", ");
+  cliSerial->print(degToRad(p.roll), n);
+  cliSerial->print(", ");
+  cliSerial->print(degToRad(p.yaw), n);
+  cliSerial->print("} ");
 }

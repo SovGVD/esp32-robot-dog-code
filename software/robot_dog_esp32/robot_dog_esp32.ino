@@ -21,7 +21,7 @@
 #include <MPU9250_WE.h>
 #include <Wire.h>
 
-#include "libs/IK/IK.cpp"
+#include "libs/IK/IK_simple.cpp"  // TODO this is for small dog only!!!
 #include "libs/planner/planner.cpp"
 #include "libs/balance/balance.cpp"
 #include "libs/gait/gait.cpp"

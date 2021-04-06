@@ -81,8 +81,8 @@
 #define TRANSITION_PROGRESS_STEP2 0.4
 
 typedef struct {
-	point initialValue;
-	point targetValue;
+	figure initialValue;
+	figure targetValue;
 	double offTheGround;
 } transitionParameters;
 
@@ -91,18 +91,21 @@ class transition
 	public:
 		transition();
 		void set(transitionParameters param);
-		point swing(double progress);
-		point linear(double progress);
+		figure swing(double progress);
+		figure linear(double progress);
 	private:
 		transitionParameters _param;
-		point  p;
+		figure  f;
 		double stepProgress;
-		double ax;
-		double ay;
-		double az;
+		double dPx;
+		double dPy;
+		double dPz;
+		double dOp;
+		double dOr;
+		double dOy;
 		double z;
-		double z1; // height off the ground on step1
-		double z2; // height off the ground on step2
+		double P_z1; // height off the ground on step1
+		double P_z2; // height off the ground on step2
 };
 
 #endif

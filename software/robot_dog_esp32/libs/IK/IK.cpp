@@ -27,78 +27,40 @@ iksolver IK::solve()
 	legangle angle;
 	iksolver s;
 	
-	// TODO: what can I do with limits?
-	double lx = _leg->foot.x - (_leg->body.x + _body->position.x + bodyBalance.x); if (_leg->inverse.x) { lx = -lx; };
-	double ly = _leg->foot.y - (_leg->body.y + _body->position.y + bodyBalance.y); if (_leg->inverse.y) { ly = -ly; };
-	double lz = _leg->foot.z - (_leg->body.z + _body->position.z + bodyBalance.z); if (_leg->inverse.z) { lz = -lz; };
-	#ifdef DEBUG_HAL_LEG
-		Serial.print("LEG BODY: ");
-		Serial.print(_leg->body.x, 10);
-		Serial.print(" ");
-		Serial.print(_leg->body.y, 10);
-		Serial.print(" ");
-		Serial.println(_leg->body.z, 10);
-		
-		Serial.print("LEG POSITION: ");
-		Serial.print(_body->position.x, 10);
-		Serial.print(" ");
-		Serial.print(_body->position.y, 10);
-		Serial.print(" ");
-		Serial.println(_body->position.z, 10);
-		
-		
-		Serial.print("LEG FOOT: ");
-		Serial.print(_leg->foot.x, 10);
-		Serial.print(" ");
-		Serial.print(_leg->foot.y, 10);
-		Serial.print(" ");
-		Serial.println(_leg->foot.z, 10);
-		
-		Serial.print("L: ");
-		Serial.print(lx, 10);
-		Serial.print(" ");
-		Serial.print(ly, 10);
-		Serial.print(" ");
-		Serial.println(lz, 10);
-	#endif
+	// normalize by body rotation
+	double tmpSin = sin(_body->orientation.yaw * -1);
+	double tmpCos = cos(_body->orientation.yaw * -1);
 
-	
+	point legFoot = {
+			(_leg->foot.x - _body->position.x) * tmpCos - (_leg->foot.y - _body->position.y) * tmpSin,
+			(_leg->foot.x - _body->position.x) * tmpSin + (_leg->foot.y - _body->position.y) * tmpCos,
+			_leg->foot.z
+		};
+
+	point legBody = {
+			(_leg->body.x - _body->position.x) * tmpCos - (_leg->body.y - _body->position.y) * tmpSin,
+			(_leg->body.x - _body->position.x) * tmpSin + (_leg->body.y - _body->position.y) * tmpCos,
+			_leg->body.z
+		};
+
+
+	// TODO: what can I do with limits?
+	double lx = legFoot.x - legBody.x; if (_leg->inverse.x) { lx = -lx; };
+	double ly = legFoot.y - legBody.y; if (_leg->inverse.y) { ly = -ly; };
+	double lz = legFoot.z - legBody.z; if (_leg->inverse.z) { lz = -lz; };
+
 	double a = lx*lx + lz*lz;                       // square of hypotenuse (points between leg.body and leg.foot in XZ-plane)
 	double sqrta = sqrt(a);
 	double dxz = a - _leg->size.l1*_leg->size.l1;   // square of hypotenuse between BETA angle joint and ground in XZ plane
 	double dyz = ly*ly + dxz;                       // square of hypotenuse between BETA angle joint and ground in YZ plane
 	double l2p2 = _leg->size.l2*_leg->size.l2;      // square of l2
 	double l3p2 = _leg->size.l3*_leg->size.l3;      // square of l3
-	#ifdef DEBUG_HAL_LEG	
-		Serial.print("A: ");
-		Serial.print(a, 10);
-		Serial.print(" dXZ: ");
-		Serial.print(dxz, 10);
-		Serial.print(" dYZ: ");
-		Serial.println(dyz, 10);
-	#endif
 	
 	angle.alpha = M_PI - ikAsin(lx/sqrta) - ikAcos(_leg->size.l1/sqrta);
-	#ifdef DEBUG_HAL_LEG
-		Serial.print("ALPHA: ");
-		Serial.println(angle.alpha*(180/M_PI), 10);
-		Serial.print("ALPHA DBG:");
-		Serial.print(ikAtan2(lz, lx),10);
-		Serial.print(" ");
-		Serial.println(ikAcos(_leg->size.l1/sqrt(a)),10);
-	#endif
 	
 	angle.beta  = M_PI_2 - ikAcos( (l3p2 - l2p2 - dyz) / (-2 * sqrt(dyz) * _leg->size.l2)) - ikAsin(ly/sqrt(dxz)); 
-	#ifdef DEBUG_HAL_LEG
-		Serial.print("BETA: ");
-		Serial.println(angle.beta*(180/M_PI), 10);
-	#endif
 
 	angle.gamma = ikAcos( (dyz - l2p2 - l3p2) / (-2 * _leg->size.l2 * _leg->size.l3) );
-	#ifdef DEBUG_HAL_LEG
-		Serial.print("GAMMA: ");
-		Serial.println(angle.gamma*(180/M_PI), 10);
-	#endif
 	
 	s.isSolved = true;	// TODO
 	s.angle = angle;

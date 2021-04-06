@@ -38,6 +38,7 @@ leg legs[LEG_NUM] = {
       {  0,  0,  0},             // servo middle trim
       {  2,  1,  1}              // gear ratio, first and last one is 16 groves on servo and 24 groves on leg
     },
+    {    -LEG_BODY_X,   LEG_BODY_Y_F,      LEG_BODY_Z},
     {   -LEG_POINT_X,  LEG_POINT_Y_F,    -LEG_POINT_Z},
     {LEG_ANGLE_ALPHA, LEG_ANGLE_BETA, LEG_ANGLE_GAMMA},
     {true, true, false, false, true, true},
@@ -57,6 +58,7 @@ leg legs[LEG_NUM] = {
       {  0,  0,  0},
       {  2,  1,  1}
     },
+    {     LEG_BODY_X,   LEG_BODY_Y_F,      LEG_BODY_Z},
     {    LEG_POINT_X,  LEG_POINT_Y_F,    -LEG_POINT_Z},
     {LEG_ANGLE_ALPHA, LEG_ANGLE_BETA, LEG_ANGLE_GAMMA},
     {false, true, false, true, false, false},
@@ -76,6 +78,7 @@ leg legs[LEG_NUM] = {
       {  0,  0,  0},
       {  2,  1,  1}
     },
+    {    -LEG_BODY_X,  -LEG_BODY_Y_H,      LEG_BODY_Z},
     {   -LEG_POINT_X, -LEG_POINT_Y_H,    -LEG_POINT_Z},
     {LEG_ANGLE_ALPHA, LEG_ANGLE_BETA, LEG_ANGLE_GAMMA},
     {true, true, false, true, true, true},
@@ -95,6 +98,7 @@ leg legs[LEG_NUM] = {
       {  0,  0,  0},
       {  2,  1,  1}
     },
+    {     LEG_BODY_X,  -LEG_BODY_Y_H,      LEG_BODY_Z},
     {    LEG_POINT_X, -LEG_POINT_Y_H,    -LEG_POINT_Z},
     {LEG_ANGLE_ALPHA, LEG_ANGLE_BETA, LEG_ANGLE_GAMMA},
     {false, true, false, false, false, false},
