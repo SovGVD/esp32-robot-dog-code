@@ -15,31 +15,56 @@ var vector = {
 	},
 };
 
+var telemetry = {
+	status:   {},
+	voltage:  0.0,
+	current:  0.0,
+	loopTime: 0,
+};
+
 var gui ={
-	init: function () {
-		gui.updateInterval = setInterval(gui.update, 100);
-		document.addEventListener("visibilitychange", gui.onVisibilityChange);
-	},
-	update: function () {
-		gui.showVector();
-	},
-	showVector: function () {
-	},
-	obj: {},
 	updateInterval: null,
+	obj: {
+		status: null,
+	},
+
+	init: function () {
+		document.addEventListener("visibilitychange", gui.onVisibilityChange);
+		gui.obj.status = G('status');
+
+		gui.updateInterval = setInterval(gui.update, 100);
+	},
+
+	update: function () {
+		gui.updateStatus();
+	},
+
 	onVisibilityChange: function () {
 		if (document.visibilityState == "hidden") {
 			// If browser closed
 			failsafe.setFS();
 		}
-	}
+	},
+
+	displayNumber: function (n) {
+		if (n == 0) {
+			return "0.000";
+		}
+
+		return (n + "000000").slice(0, 5);
+	},
+
+	updateStatus: function (){
+		gui.obj.status.innerHTML = gui.displayNumber(telemetry.voltage) + 'V | ' + gui.displayNumber(telemetry.current) + 'A | LoopTime: ' + telemetry.loopTime;
+	},
 };
 
 let ws = {
-	ws:             null,
-	status:         false,
-	error:          false,
-	updateInterval: null,
+	ws:                null,
+	status:            false,
+	error:             false,
+	updateInterval:    null,
+	telemetryInterval: null,
 	
 	init: function () {
 		clearInterval(ws.updateInterval);
@@ -51,7 +76,12 @@ let ws = {
 			ws.ws.onerror = function() {
 				ws.status = false;
 			};
-			ws.updateInterval = setInterval(ws.update, 50);
+			ws.ws.onmessage = function (event) {
+				event.data.arrayBuffer().then(buffer => {ws.parseEvent(new Uint8Array(buffer))});
+			};
+
+			ws.updateInterval    = setInterval(ws.update, 50);
+			ws.telemetryInterval = setInterval(ws.telemetryRequest, 1000);
 		} catch(e) {
 			clearInterval(ws.updateInterval);
 			ws.status = false;
@@ -59,11 +89,29 @@ let ws = {
 			console.log(e);
 		};
 	},
-	
+
 	update: function(data) {
 		if (ws.status) {
 			ws.ws.send(packet.move());
 		}
+	},
+
+	parseEvent: function (binaryData) {
+		switch (binaryData[0]) {
+			case 84:
+				ws.telemetryResponse(binaryData);
+				break;
+		}
+	},
+
+	telemetryRequest: function (data) {
+		if (ws.status) {
+			ws.ws.send(packet.telemetry());
+		}
+	},
+
+	telemetryResponse: function (binaryData) {
+		packet.telemetryParse(binaryData);
 	}
 };
 
@@ -91,6 +139,9 @@ let packet = {
 		view[offset]   = (num>>8)&255;
 		view[offset+1] = num&255;
 	},
+	_getUint16: function (data, offset) {
+		return parseInt(data[offset]<<8 | data[offset+1]);
+	},
 	move: function () {
 		packet.vMove[0] = 77;
 		packet.vMove[1] = 1;
@@ -100,7 +151,19 @@ let packet = {
 		packet._uint16(packet.vMove, packet._norm1(vector.rotate.pitch),  8);
 		packet._uint16(packet.vMove, packet._norm1(vector.rotate.roll),  10);
 		packet._uint16(packet.vMove, packet._norm1(vector.rotate.yaw),   12);
+
 		return packet.pMove;
+	},
+	telemetry: function () {
+		packet.vMove[0] = 84;
+		packet.vMove[1] = 1;
+
+		return packet.pMove;
+	},
+	telemetryParse: function (binaryTelemetry) {
+		telemetry.voltage  = packet._getUint16(binaryTelemetry, 4)/1000;
+		telemetry.current  = packet._getUint16(binaryTelemetry, 6)/1000;
+		telemetry.loopTime = packet._getUint16(binaryTelemetry, 8);
 	}
 }
 
@@ -186,30 +249,11 @@ let control = {
 	},
 	leftJcallback(v) {
 		vector.rotate.yaw = v.x;
-		updateStatus();
 	},
 	rightJcallback(v) {
 		vector.move.x = v.x;
 		vector.move.y = v.y;
-		updateStatus();
 	}
-}
-
-
-
-
-let status = G('status');
-
-function displayNumber(n) {
-    if (n == 0) {
-        return "------";
-    }
-
-    return (n + "0000000").slice(0, 6);
-}
-
-function updateStatus(){
-    status.innerHTML = 'X: ' + displayNumber(vector.move.x) + ', Y: ' + displayNumber(vector.move.y) + ', Z: ' + displayNumber(vector.move.z) + ', r: ' + displayNumber(vector.rotate.roll) + ', p:' + displayNumber(vector.rotate.pitch) + ', y: ' + displayNumber(vector.rotate.yaw) + ' | ';
 }
 
 control.init();
