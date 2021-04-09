@@ -137,6 +137,7 @@ int WiFiMode = AP_MODE;
 IPAddress WiFiIP;
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
+uint8_t telemetryPackage[P_TELEMETRY_LEN];
 
 // CLI
 Stream *cliSerial;

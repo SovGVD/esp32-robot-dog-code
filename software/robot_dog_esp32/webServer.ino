@@ -29,9 +29,20 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
     clientOnline = true;
   } else if (clientOnline && type == WS_EVT_DATA) {
     FS_WS_count = 0;  // zero FS counter
-    if (data[0] == 77) {  // M
-      pMove(data);
+
+    switch(data[0]) {
+      case P_MOVE:
+        pMove(data);
+        break;
+      case P_TELEMETRY:
+        pTelemetry();
+        client->binary(telemetryPackage, P_TELEMETRY_LEN);
+        break;
+      default:
+        Serial.print("UNKNOWN PACKAGE ID: ");
+        Serial.println(data[0], DEC);
     }
+
   } else if(type == WS_EVT_DISCONNECT){
     clientOnline = false;
   }

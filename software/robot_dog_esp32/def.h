@@ -27,6 +27,12 @@
 /* WiFi */
 #define AP_MODE 0
 
+/* Packages code */
+#define P_TELEMETRY_LEN 14
+
+#define P_MOVE      77  // ASCII "M"
+#define P_TELEMETRY 84  //       "T"
+
 /* Debug (SLOW!!!)*/
 //#define DEBUG_HAL_LEG
 
