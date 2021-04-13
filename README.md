@@ -1,5 +1,7 @@
 # Small Robot dog (quadruped)
 
+![Small robot dog](https://github.com/SovGVD/esp32-robot-dog-code/blob/master/assets/img/small.jpg?raw=true)
+
 ## Hardware
 - ESP32
 - IMU (not implemented)
