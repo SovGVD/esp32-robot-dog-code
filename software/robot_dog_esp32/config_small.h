@@ -7,7 +7,7 @@
 #define LEG_BODY_Y_F    70.5  // not sure
 #define LEG_BODY_Y_H    70.5
 #define LEG_BODY_Z       0.0
-#define LEG_POINT_X     60.0
+#define LEG_POINT_X     56.0
 #define LEG_POINT_Y_F   70.5 // not sure
 #define LEG_POINT_Y_H   70.5
 #define LEG_POINT_Z     80.0
