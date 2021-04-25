@@ -39,14 +39,10 @@ void updateGait() {
   body.orientation = transitionProgress.orientation;
 
 
-// TODO not the best place for calculation of body leg points
-  double tmpSin = sin(body.orientation.yaw);
-  double tmpCos = cos(body.orientation.yaw);
 
-  for (int i = 0; i < LEG_NUM; i++) {
-    legs[i].body.x = body.position.x + legs[i].defaultBody.x * tmpCos - legs[i].defaultBody.y * tmpSin;
-    legs[i].body.y = body.position.y + legs[i].defaultBody.x * tmpSin + legs[i].defaultBody.y * tmpCos;
-  }
+  bodyUpdate.update();
+
+
 
   gaitProgress[LEGLF] = gaitLegLF.next();
   gaitProgress[LEGRF] = gaitLegRF.next();

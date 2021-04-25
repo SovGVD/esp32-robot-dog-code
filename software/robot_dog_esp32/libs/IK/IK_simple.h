@@ -3,10 +3,8 @@
  * Boston Dynamics Spot style
  *
  * MIT Licence
- * Developed by Gleb Devyatkin (SovGVD) in 2020
+ * Developed by Gleb Devyatkin (SovGVD) in 2021
  */
- 
- // WARNING: this is WIP and this library was not tested in any software or hardware!!!
  
  /**
  * All axis aligned with MPU9250

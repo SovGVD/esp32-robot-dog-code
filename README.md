@@ -5,7 +5,7 @@
 ## Hardware
 - ESP32
 - IMU (not implemented)
-- 12 servos TowerPro mg90d (hope it will work)
+- 12 servos TowerPro mg90d
 - Two 18650
 
 ## Software

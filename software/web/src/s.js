@@ -26,11 +26,13 @@ var gui ={
 	updateInterval: null,
 	obj: {
 		status: null,
+		body_rotate: null,
 	},
 
 	init: function () {
 		document.addEventListener("visibilitychange", gui.onVisibilityChange);
 		gui.obj.status = G('status');
+		gui.obj.body_rotate = G('body_rotate');
 
 		gui.updateInterval = setInterval(gui.update, 100);
 	},
@@ -251,6 +253,15 @@ let control = {
 		vector.rotate.yaw = v.x;
 	},
 	rightJcallback(v) {
+		/**
+		 * Body rotation, this is temporary to easy validate IK
+		 */
+		if (gui.obj.body_rotate.checked) {
+			vector.rotate.roll  = v.y;
+			vector.rotate.pitch = v.x;
+			
+			return;
+		}
 		vector.move.x = v.x;
 		vector.move.y = v.y;
 	}
