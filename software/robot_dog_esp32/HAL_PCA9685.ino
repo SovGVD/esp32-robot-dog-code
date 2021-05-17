@@ -40,5 +40,14 @@ void runServoCalibrate(leg &_leg)
   // TODO
 }
 
+void disableServos()
+{
+  // TODO
+}
+
+void enableServos()
+{
+  // TODO
+}
 
 #endif

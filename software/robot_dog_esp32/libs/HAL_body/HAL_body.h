@@ -14,10 +14,11 @@
 class HAL_body
 {
 	public:
-		HAL_body(moveVector &vector, figure &bodyObj, leg legs[LEG_NUM]);
+		HAL_body(moveVector &vector, angle &correction, figure &bodyObj, leg legs[LEG_NUM]);
 		void update();
 	private:
 		moveVector *_vector;
+		angle      *_correction;
 		figure     *_body;
 		leg        *_legs[LEG_NUM];
 

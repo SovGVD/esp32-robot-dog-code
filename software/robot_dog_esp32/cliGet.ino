@@ -119,11 +119,11 @@ double cliGetPower(double id)
 double cliGetIMU(double id)
 {
   cliSerial->print("Pitch: ");
-  cliSerial->println(IMU_DATA[PITCH], 6);
+  cliSerial->println(radToDeg(IMU_DATA.pitch), 6);
   cliSerial->print("Roll: ");
-  cliSerial->println(IMU_DATA[ROLL], 6);
+  cliSerial->println(radToDeg(IMU_DATA.roll), 6);
   cliSerial->print("Yaw: ");
-  cliSerial->println(IMU_DATA[YAW], 6);
+  cliSerial->println(radToDeg(IMU_DATA.yaw), 6);
 
   cliHideReturn = true;
   return 0.0;

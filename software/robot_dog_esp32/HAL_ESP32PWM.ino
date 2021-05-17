@@ -100,4 +100,14 @@ void runServoCalibrate(leg &_leg)
   ESP32_ISR_Servos.setPulseWidth(esp32pwmServos[l+2], servoMainProfile.deg90);
 }
 
+void disableServos()
+{
+  ESP32_ISR_Servos.disableAll();
+}
+
+void enableServos()
+{
+  ESP32_ISR_Servos.enableAll();
+}
+
 #endif

@@ -1,10 +1,11 @@
 #include "math.h" 
 #include "HAL_body.h"
 
-HAL_body::HAL_body(moveVector &vector, figure &bodyObj, leg legs[LEG_NUM])
+HAL_body::HAL_body(moveVector &vector, angle &correction, figure &bodyObj, leg legs[LEG_NUM])
 {
-	_vector = &vector;	// TODO that is wrong... we should set body pitch/roll somewhere else (e.g. in IMU process that still not in the code...)
-	_body   = &bodyObj;
+	_vector     = &vector;	// TODO that is wrong... we should set body pitch/roll somewhere else (e.g. in IMU process that still not in the code...)
+	_correction = &correction;
+	_body       = &bodyObj;
 	for (int i = 0; i < LEG_NUM; i++) {
 		_legs[i] = &legs[i];
 	}
@@ -19,11 +20,11 @@ void HAL_body::update()
 	 * @see: https://en.wikipedia.org/wiki/Rotation_matrix#General_rotations
 	 */
 	
-	double sinPitch = sin(_body->orientation.pitch + _vector->rotate.pitch * 0.2);	// TODO THIS IS WRONG, it should not be there!!!
-	double cosPitch = cos(_body->orientation.pitch + _vector->rotate.pitch * 0.2);
+	double sinPitch = sin(_body->orientation.pitch - _correction->pitch + _vector->rotate.pitch * 0.2);	// TODO THIS IS WRONG, it should not be there!!!
+	double cosPitch = cos(_body->orientation.pitch - _correction->pitch + _vector->rotate.pitch * 0.2);
 
-	double sinRoll = sin(_body->orientation.roll + _vector->rotate.roll * 0.2);
-	double cosRoll = cos(_body->orientation.roll + _vector->rotate.roll * 0.2);
+	double sinRoll = sin(_body->orientation.roll - _correction->roll + _vector->rotate.roll * 0.2);
+	double cosRoll = cos(_body->orientation.roll - _correction->roll + _vector->rotate.roll * 0.2);
 
 	double sinYaw = sin(_body->orientation.yaw);
 	double cosYaw = cos(_body->orientation.yaw);

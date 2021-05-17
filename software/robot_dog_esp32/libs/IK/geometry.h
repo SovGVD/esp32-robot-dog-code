@@ -21,8 +21,8 @@ typedef struct {
 
 // angle in 3D
 typedef struct {
-	double roll;    // X axis
-	double pitch;   // Y axis
+	double pitch;   // X axis
+	double roll;    // Y axis
 	double yaw;     // Z axis
 } angle;
 
@@ -37,6 +37,5 @@ typedef struct {
 	point move;
 	angle rotate;
 } moveVector;
-
 
 #endif

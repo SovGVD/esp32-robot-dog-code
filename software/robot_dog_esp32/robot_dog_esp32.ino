@@ -2,6 +2,7 @@
 
 #include "libs/IK/geometry.h"
 #include "libs/IK/leg.h"
+#include "libs/PID/AnglePID.h"
 #include "def.h"
 #include "config.h"
 #include "config_small.h"
@@ -20,8 +21,10 @@
 #include "subscription.h"
 
 #include <MPU9250_WE.h>
+#include <SimpleKalmanFilter.h>
 #include <Wire.h>
 
+#include "libs/PID/AnglePID.cpp"
 #include "libs/IK/IK_simple.cpp"  // TODO this is for small dog only!!!
 #include "libs/planner/planner.cpp"
 #include "libs/balance/balance.cpp"
@@ -50,7 +53,7 @@
   #endif
 #endif
 
-float IMU_DATA[3] = {0, 0, 0};
+angle IMU_DATA = {0, 0, 0};
 MPU9250_WE IMU;
 
 // run commands on diferent cores (FAST for main, SLOW for services)
@@ -133,7 +136,17 @@ balance bodyBalance(
   legs[LEGRH]
 );
 
-HAL_body bodyUpdate(vector, body, legs);
+// IMU+PID
+angle imuCorrection = {0.0, 0.0, 0.0};
+angle imuTarget     = {0.0, 0.0, 0.0};
+
+SimpleKalmanFilter filterIMU_X(0.2, 0.2, 0.05);
+SimpleKalmanFilter filterIMU_Y(0.2, 0.2, 0.05);
+SimpleKalmanFilter filterIMU_Z(0.2, 0.2, 0.05);
+
+AnglePID imuCorrectionPID(IMU_DATA, imuTarget, imuCorrection, 0.001, 0.0000005, 2000);
+
+HAL_body bodyUpdate(vector, imuCorrection, body, legs);
 
 // WebServer
 bool clientOnline = false;
@@ -200,9 +213,10 @@ void loop()
     updateGait();
     updateHAL();
     doHAL();
+    
 
     updateWiFi();
-    
+    //imuCorrectionPID.update();
 
     FS_WS_count++;
 
@@ -244,6 +258,13 @@ void servicesLoop(void * pvParameters) {
       serviceFastPreviousTime = serviceCurrentTime;
 
       updateIMU();
+      //imuCorrectionPID.update();
+        Serial.print(IMU_DATA.pitch, 8);
+        Serial.print(",");
+        Serial.print(IMU_DATA.pitch, 8);
+        Serial.print(",");
+        Serial.println(IMU_DATA.pitch, 8);
+      
       
       runFASTCommand();
       doFASTSubscription();
