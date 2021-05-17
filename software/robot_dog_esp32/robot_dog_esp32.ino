@@ -2,15 +2,16 @@
 
 #include "libs/IK/geometry.h"
 #include "libs/IK/leg.h"
-#include "libs/IK/IK_simple.h"  // TODO this is for small dog only!!!
-#include "libs/planner/planner.h"
-#include "libs/balance/balance.h"
-#include "libs/gait/gait.h"
-
 #include "def.h"
 #include "config.h"
 #include "config_small.h"
 #include "config_wifi.h"
+#include "libs/IK/IK_simple.h"  // TODO this is for small dog only!!!
+#include "libs/planner/planner.h"
+#include "libs/balance/balance.h"
+#include "libs/gait/gait.h"
+#include "libs/HAL_body/HAL_body.h"
+
 #include <EEPROM.h>
 #include "WiFi.h"
 #include "ESPAsyncWebServer.h"
@@ -25,6 +26,7 @@
 #include "libs/planner/planner.cpp"
 #include "libs/balance/balance.cpp"
 #include "libs/gait/gait.cpp"
+#include "libs/HAL_body/HAL_body.cpp"
 
 /**
  * Hardware libraries
@@ -131,6 +133,8 @@ balance bodyBalance(
   legs[LEGRH]
 );
 
+HAL_body bodyUpdate(vector, body, legs);
+
 // WebServer
 bool clientOnline = false;
 int WiFiMode = AP_MODE;
@@ -145,6 +149,9 @@ Stream *cliSerial;
 // Subscriptions
 bool subscriptionEnabled = false;
 bool subscriptionBinary = false;
+
+bool mainLoopReady = false;
+bool serviceLoopReady = false;
 
 
 void setup()
@@ -175,6 +182,8 @@ void setup()
     1,              /* priority of the task */
     &ServicesTask,  /* Task handle to keep track of created task */
     0);             /* pin task to core 0 */
+
+  mainLoopReady = true;
 }
 
 /**
@@ -184,7 +193,7 @@ void setup()
 void loop()
 {
   currentTime = micros();
-  if (currentTime - previousTime >= LOOP_TIME) {
+  if (mainLoopReady && serviceLoopReady && currentTime - previousTime >= LOOP_TIME) {
     previousTime = currentTime;
 
     updateFailsafe();
@@ -221,12 +230,14 @@ void servicesSetup() {
   delay(100);
   initPowerSensor();
   delay(100);
+
+  serviceLoopReady = true;
 }
 
 void servicesLoop(void * pvParameters) {
   servicesSetup();
 
-  for (;;) {
+  while(mainLoopReady && serviceLoopReady) {
     serviceCurrentTime = micros();
 
     if (serviceCurrentTime - serviceFastPreviousTime >= SERVICE_FAST_LOOP_TIME) {
