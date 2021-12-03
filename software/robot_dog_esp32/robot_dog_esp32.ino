@@ -168,12 +168,6 @@ void setup()
   initGait();
   delay(100);
   
-  initWiFi();
-  delay(100);
-  
-  initWebServer();
-  delay(100);
-  
   xTaskCreatePinnedToCore(
     servicesLoop,   /* Task function. */
     "Services",     /* name of task. */
@@ -201,9 +195,6 @@ void loop()
     updateHAL();
     doHAL();
 
-    updateWiFi();
-    
-
     FS_WS_count++;
 
     loopTime = micros() - currentTime;
@@ -228,7 +219,14 @@ void servicesSetup() {
 
   initIMU();
   delay(100);
+
   initPowerSensor();
+  delay(100);
+
+  initWiFi();
+  delay(100);
+  
+  initWebServer();
   delay(100);
 
   serviceLoopReady = true;
@@ -258,6 +256,7 @@ void servicesLoop(void * pvParameters) {
     if (serviceCurrentTime - servicePreviousTime >= SERVICE_LOOP_TIME) {
       servicePreviousTime = serviceCurrentTime;
 
+      updateWiFi();
       updatePower();
       runSLOWCommand();
       updateCLI();

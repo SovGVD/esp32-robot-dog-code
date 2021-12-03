@@ -15,6 +15,8 @@ void WiFiEvent(WiFiEvent_t event){
         case SYSTEM_EVENT_AP_START:
             WiFi.softAPsetHostname(wifiSsid[WiFiMode]);
             WiFiIP = WiFi.softAPIP();
+            Serial.print("WiFi AP IP: ");
+            Serial.println(WiFiIP);
             break;
         case SYSTEM_EVENT_AP_STOP:
             break;
@@ -23,6 +25,8 @@ void WiFiEvent(WiFiEvent_t event){
             break;
         case SYSTEM_EVENT_STA_GOT_IP:
             WiFiIP = WiFi.localIP();
+            Serial.print("WiFi STA IP: ");
+            Serial.println(WiFiIP);
             break;
         default:
             break;
