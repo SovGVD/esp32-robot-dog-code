@@ -39,8 +39,8 @@ void updateIMU()
   xyzFloat angle = IMU.getAngles();
 
   // TODO not sure about correct mapping!!!
-  IMU_DATA.pitch = degToRad(filterIMU_Y.updateEstimate(angle.y));
-  IMU_DATA.roll  = degToRad(filterIMU_X.updateEstimate(angle.x));
-  IMU_DATA.yaw   = degToRad(filterIMU_Z.updateEstimate(angle.z));
-  
+
+  IMU_DATA.pitch = degToRad(angle.y);
+  IMU_DATA.roll  = degToRad(angle.x);
+  IMU_DATA.yaw   = degToRad(angle.z);
 }

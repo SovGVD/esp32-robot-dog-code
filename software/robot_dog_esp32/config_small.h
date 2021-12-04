@@ -16,9 +16,9 @@
 #define LEG_NUM 4
 
 // PID
-#define PID_LEVEL_P 0.0
-#define PID_LEVEL_I 0.0
-#define PID_LEVEL_D 0.0
+#define PID_LEVEL_P 0.01
+#define PID_LEVEL_I 0.008
+#define PID_LEVEL_D 0.3
 
 // Size of leg parts in mm
 #define LEG_SIZE_L1   0.0

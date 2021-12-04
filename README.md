@@ -12,7 +12,9 @@
 - Arduino IDE compatible
 
 ## TODO
-- [ ] use power sensor and IMU
+- [x] use IMU for leveling
+- [ ] UI, CLI, EEPROM and docs for IMU leveling
+- [ ] use power sensor for something
 
 ## How to
 ### Calibrate servos (create `servoMainProfile`)

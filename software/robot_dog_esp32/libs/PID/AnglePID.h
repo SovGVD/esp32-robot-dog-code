@@ -13,7 +13,7 @@
 class AnglePID
 {
 	public:
-		AnglePID(angle &current, angle &target, angle &output, double Kp, double Ki, double Kd);
+		AnglePID(angle &current, angle &target, angle &output, double Kp, double Ki, double Kd, double minError, double maxError);
 		void set(double Kp, double Ki, double Kd);
 		void update();
 	private:
@@ -23,11 +23,17 @@ class AnglePID
 		double        _Kp = 0.0;
 		double        _Ki = 0.0;
 		double        _Kd = 0.0;
+		double        _minError;
+		double        _maxError;
 		angle         P   = {0.0, 0.0, 0.0};
 		angle         I   = {0.0, 0.0, 0.0};
 		angle         D   = {0.0, 0.0, 0.0};
 		angle         err = {0.0, 0.0, 0.0};
+		angle         preCurrent = {0.0, 0.0, 0.0};
+		angle         dInput = {0.0, 0.0, 0.0};
+		angle         outputSum = {0.0, 0.0, 0.0};
 		unsigned long _t  = 0;
+		bool          pOnE = true;
 };
 
 #endif

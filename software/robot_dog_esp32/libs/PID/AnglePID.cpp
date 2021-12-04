@@ -1,7 +1,7 @@
-#include "math.h" 
+#include "math.h"
 #include "AnglePID.h"
 
-AnglePID::AnglePID(angle &current, angle &target, angle &output, double Kp, double Ki, double Kd)
+AnglePID::AnglePID(angle &current, angle &target, angle &output, double Kp, double Ki, double Kd, double minError, double maxError)
 {
 	_current = &current;
 	_target  = &target;
@@ -10,6 +10,9 @@ AnglePID::AnglePID(angle &current, angle &target, angle &output, double Kp, doub
 	_Kp = Kp;
 	_Ki = Ki;
 	_Kd = Kd;
+	
+	_minError = minError;
+	_maxError = maxError;
 }
 
 void AnglePID::set(double Kp, double Ki, double Kd)
@@ -28,30 +31,41 @@ void AnglePID::update()
 	
 	double dt = (micros() - _t) / 1000.0;
 	
-	P.pitch = _target->pitch - _current->pitch;
-	P.roll  = _target->roll  - _current->roll;
-	P.yaw   = _target->yaw   - _current->yaw;
-
-	I.pitch = I.pitch + P.pitch * dt;
-	I.roll  = I.roll  + P.roll  * dt;
-	I.yaw   = I.yaw   + P.yaw   * dt;
-
-	D.pitch = (P.pitch - err.pitch) / dt;
-	D.roll  = (P.roll  - err.roll)  / dt;
-	D.yaw   = (P.yaw   - err.yaw)   / dt;
-
-	err.pitch = P.pitch;
-	err.roll  = P.roll;
-	err.yaw   = P.yaw;
+	err.pitch = _target->pitch - _current->pitch;
+	err.roll  = _target->roll  - _current->roll;
+	err.yaw   = _target->yaw   - _current->yaw;
 	
-	_output->pitch = P.pitch * _Kp + I.pitch * _Ki + D.pitch * _Kd;
-	_output->roll  = P.roll  * _Kp + I.roll  * _Ki + D.roll  * _Kd;
-	_output->yaw   = P.yaw   * _Kp + I.yaw   * _Ki + D.yaw   * _Kd;
+	dInput.pitch = _current->pitch - preCurrent.pitch;
+	dInput.roll  = _current->roll  - preCurrent.roll;
+	dInput.yaw   = _current->yaw   - preCurrent.yaw;
+	
+	outputSum.pitch += _Ki * err.pitch;
+	outputSum.roll  += _Ki * err.roll;
+	outputSum.yaw   += _Ki * err.yaw;
 
-
+	if (outputSum.pitch > _maxError)  outputSum.pitch = _maxError;
+	if (outputSum.pitch < _minError)  outputSum.pitch = _minError;
+	if (outputSum.roll  > _maxError)  outputSum.roll  = _maxError;
+	if (outputSum.roll  < _minError)  outputSum.roll  = _minError;
+	if (outputSum.yaw   > _maxError)  outputSum.yaw   = _maxError;
+	if (outputSum.yaw   < _minError)  outputSum.yaw   = _minError;
+	
+	_output->pitch = _Kp * err.pitch + outputSum.pitch - _Kd * dInput.pitch;
+	_output->roll  = _Kp * err.roll  + outputSum.roll  - _Kd * dInput.roll;
+	_output->yaw   = _Kp * err.yaw   + outputSum.yaw   - _Kd * dInput.yaw;
+	
+	
 	/*Serial.print(_current->pitch);
 	Serial.print(",");
 	Serial.print(_target->pitch);
 	Serial.print(",");
+	Serial.print(err.pitch);
+	Serial.print(",");
+	Serial.print(outputSum.pitch);
+	Serial.print(",");
 	Serial.println(_output->pitch);*/
+	
+	preCurrent.pitch = _current->pitch;
+	preCurrent.roll  = _current->roll;
+	preCurrent.yaw   = _current->yaw;
 }

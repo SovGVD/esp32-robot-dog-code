@@ -21,7 +21,6 @@
 #include "subscription.h"
 
 #include <MPU9250_WE.h>
-#include <SimpleKalmanFilter.h>
 #include <Wire.h>
 
 #include "libs/PID/AnglePID.cpp"
@@ -140,11 +139,7 @@ balance bodyBalance(
 angle imuCorrection = {0.0, 0.0, 0.0};
 angle imuTarget     = {0.0, 0.0, 0.0};
 
-SimpleKalmanFilter filterIMU_X(0.2, 0.2, 0.05);
-SimpleKalmanFilter filterIMU_Y(0.2, 0.2, 0.05);
-SimpleKalmanFilter filterIMU_Z(0.2, 0.2, 0.05);
-
-AnglePID imuCorrectionPID(IMU_DATA, imuTarget, imuCorrection, 0.001, 0.0000005, 2000);
+AnglePID imuCorrectionPID(IMU_DATA, imuTarget, imuCorrection, PID_LEVEL_P, PID_LEVEL_I, PID_LEVEL_D, -0.2, 0.2);
 
 HAL_body bodyUpdate(vector, imuCorrection, body, legs);
 
@@ -174,18 +169,23 @@ void setup()
 
   initSettings();
   delay(100);
+
+  Wire.begin();
+  Wire.setClock(400000);
+  delay(100);
   
   initHAL();
   delay(100);
   
   initGait();
   delay(100);
-  
-  initWiFi();
+
+  initIMU();
   delay(100);
-  
-  initWebServer();
+
+  initPowerSensor();
   delay(100);
+
   
   xTaskCreatePinnedToCore(
     servicesLoop,   /* Task function. */
@@ -210,20 +210,21 @@ void loop()
     previousTime = currentTime;
 
     updateFailsafe();
+    updateCLI();  // hmm...
+    updatePower();  // TODO not so often!
+
+    updateIMU();
+    imuCorrectionPID.update();
     updateGait();
     updateHAL();
     doHAL();
-    
-
-    updateWiFi();
-    //imuCorrectionPID.update();
 
     FS_WS_count++;
 
     loopTime = micros() - currentTime;
     if (loopTime > LOOP_TIME) {
-      Serial.print("WARNING! Increase LOOP_TIME: ");
-      Serial.println(loopTime);
+      //Serial.print("WARNING! Increase LOOP_TIME: ");
+      //Serial.println(loopTime);
     }
   }
 }
@@ -236,13 +237,11 @@ void servicesSetup() {
   cliSerial = &Serial;
   initCLI();
   initSubscription();
-  Wire.begin();
-  Wire.setClock(400000);
-  delay(100);
 
-  initIMU();
+  initWiFi();
   delay(100);
-  initPowerSensor();
+  
+  initWebServer();
   delay(100);
 
   serviceLoopReady = true;
@@ -256,15 +255,6 @@ void servicesLoop(void * pvParameters) {
 
     if (serviceCurrentTime - serviceFastPreviousTime >= SERVICE_FAST_LOOP_TIME) {
       serviceFastPreviousTime = serviceCurrentTime;
-
-      updateIMU();
-      //imuCorrectionPID.update();
-        Serial.print(IMU_DATA.pitch, 8);
-        Serial.print(",");
-        Serial.print(IMU_DATA.pitch, 8);
-        Serial.print(",");
-        Serial.println(IMU_DATA.pitch, 8);
-      
       
       runFASTCommand();
       doFASTSubscription();
@@ -279,9 +269,9 @@ void servicesLoop(void * pvParameters) {
     if (serviceCurrentTime - servicePreviousTime >= SERVICE_LOOP_TIME) {
       servicePreviousTime = serviceCurrentTime;
 
-      updatePower();
+      updateWiFi();
       runSLOWCommand();
-      updateCLI();
+      
       doSLOWSubscription();
 
       serviceLoopTime = micros() - serviceCurrentTime;  // this loop + service fast loop
@@ -315,6 +305,4 @@ void runSLOWCommand()
    TODO
     - calculate center of mass and use it for balance
     - make the queue of tasks by core, e.g. not just   cliFunctionFAST = runI2CScanFAST; but array/list with commands
-    - i2c pwm broken, i2c in service loop
-
 */
