@@ -28,7 +28,7 @@
 #### Assembling
 - to assembly legs correctly print leg_calib tool/template one as it is and one mirrored for the other side of robot for Beta and Gamma angles, as also Alpha angle tool
 - power up servo and connect ESP32 to you computer, open Arduino IDE terminal
-- input `set servo_to_calib` to set all servo to position expected for printer tool
+- input `set servo_to_init` to set all servo to position expected for printer tool
 - assemble legs as closer as possible to expected leg parts positions according to the tool (90deg, 45deg, 90deg)
 
 #### Calibration
