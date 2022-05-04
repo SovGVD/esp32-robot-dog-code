@@ -1,5 +1,8 @@
 # Small Robot dog (quadruped)
 
+## Disclaimer
+**This project has been done mostly for fun about a year ago. Some libraries have been updated, so it basically does not work any more. Not every planned feature was released. No PCB is made and it creates a lot of trouble for most of you. I'm sorry to say, but I'm not going to provide any support for it any more. It's exhausting and sometimes just destroys any intentions to continue. This is not comercial project and I'm not going to do something like Donation. Maybe I'm disappointing someone. Sorry. Project closed.** 
+
 ![Small robot dog](https://github.com/SovGVD/esp32-robot-dog-code/blob/master/assets/img/small.jpg?raw=true)
 
 ## Hardware
